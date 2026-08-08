@@ -34,6 +34,46 @@ def calcular_media(notas: list[float]) -> float:
     return sum(notas) / len(notas)
 
 
+def validar_nota(nota: float) -> float:
+    """
+    Valida se uma nota está dentro do intervalo permitido.
+
+    Argumentos:
+    nota (float): Nota que será validada.
+
+    Retornos:
+    float: A própria nota quando estiver entre 0 e 10.
+
+    Exceções:
+    ValueError: Quando a nota for menor que 0 ou maior que 10.
+    """
+    if nota < 0 or nota > 10:
+        raise ValueError("A nota deve estar entre 0 e 10.")
+
+    return nota
+
+
+def validar_nome(nome: str) -> str:
+    """
+    Valida e organiza o nome informado para o estudante.
+
+    Argumentos:
+    nome (str): Nome que será validado.
+
+    Retornos:
+    str: Nome sem espaços desnecessários no início ou no final.
+
+    Exceções:
+    ValueError: Quando o nome estiver vazio ou possuir somente espaços.
+    """
+    nome_formatado = nome.strip()
+
+    if not nome_formatado:
+        raise ValueError("O nome do estudante não pode estar vazio.")
+
+    return nome_formatado
+
+
 def verificar_aprovacao(media: float, media_minima: float = 7.0) -> str:
     """
     Verifica se o estudante está aprovado ou reprovado com base na média.
