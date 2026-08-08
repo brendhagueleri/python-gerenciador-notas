@@ -74,6 +74,38 @@ def validar_nome(nome: str) -> str:
     return nome_formatado
 
 
+def cadastrar_estudante(
+    alunos: list[dict],
+    nome: str,
+    notas: list[float],
+) -> dict:
+    """
+    Cadastra um novo estudante após validar seu nome e suas notas.
+
+    Argumentos:
+    alunos (list[dict]): Lista em que o estudante será cadastrado.
+    nome (str): Nome informado para o estudante.
+    notas (list[float]): Lista de notas do estudante.
+
+    Retornos:
+    dict: Dicionário com o nome e as notas do estudante cadastrado.
+
+    Exceções:
+    ValueError: Quando o nome ou alguma nota forem inválidos.
+    """
+    nome_validado = validar_nome(nome)
+    notas_validadas = [validar_nota(nota) for nota in notas]
+
+    novo_estudante = {
+        "nome": nome_validado,
+        "notas": notas_validadas,
+    }
+
+    alunos.append(novo_estudante)
+
+    return novo_estudante
+
+
 def verificar_aprovacao(media: float, media_minima: float = 7.0) -> str:
     """
     Verifica se o estudante está aprovado ou reprovado com base na média.
@@ -92,7 +124,10 @@ def verificar_aprovacao(media: float, media_minima: float = 7.0) -> str:
     return "Reprovado"
 
 
-def gerar_relatorio(alunos: list[dict], media_minima_escola: float = 7.0) -> None:
+def gerar_relatorio(
+    alunos: list[dict],
+    media_minima_escola: float = 7.0,
+) -> None:
     """
     Gera um relatório de desempenho dos estudantes.
 
