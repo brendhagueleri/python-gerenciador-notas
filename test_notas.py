@@ -1,8 +1,11 @@
+import io
 import unittest
+from contextlib import redirect_stdout
 
 from gerenciador_notas import (
     cadastrar_estudante,
     calcular_media,
+    gerar_relatorio,
     validar_nome,
     validar_nota,
     verificar_aprovacao,
@@ -104,6 +107,52 @@ class TestGerenciadorNotas(unittest.TestCase):
             )
 
         self.assertEqual(alunos, [])
+
+    def test_cadastrar_estudante_sem_notas(self):
+        """Garante que um estudante sem notas não seja cadastrado."""
+        alunos = []
+
+        with self.assertRaises(ValueError):
+            cadastrar_estudante(
+                alunos,
+                "Brendha",
+                [],
+            )
+
+        self.assertEqual(alunos, [])
+
+    def test_gerar_relatorio_sem_estudantes(self):
+        """Testa a mensagem exibida quando não existem estudantes cadastrados."""
+        saida = io.StringIO()
+
+        with redirect_stdout(saida):
+            gerar_relatorio([])
+
+        conteudo = saida.getvalue()
+
+        self.assertIn("RELATÓRIO DE DESEMPENHO", conteudo)
+        self.assertIn("Nenhum estudante cadastrado.", conteudo)
+
+    def test_gerar_relatorio_com_estudante(self):
+        """Testa os dados exibidos no relatório de um estudante."""
+        alunos = [
+            {
+                "nome": "Brendha",
+                "notas": [8.0, 9.0, 7.0],
+            }
+        ]
+
+        saida = io.StringIO()
+
+        with redirect_stdout(saida):
+            gerar_relatorio(alunos)
+
+        conteudo = saida.getvalue()
+
+        self.assertIn("Estudante: Brendha", conteudo)
+        self.assertIn("Notas: 8.0, 9.0, 7.0", conteudo)
+        self.assertIn("Média: 8.00", conteudo)
+        self.assertIn("Situação: Aprovado", conteudo)
 
 
 if __name__ == "__main__":
