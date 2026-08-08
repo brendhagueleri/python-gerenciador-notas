@@ -1,21 +1,4 @@
-estudantes = [
-    {
-        "nome": "Ana",
-        "notas": [8.5, 7.0, 9.0]
-    },
-    {
-        "nome": "Bruno",
-        "notas": [6.0, 5.5, 7.0]
-    },
-    {
-        "nome": "Carla",
-        "notas": [9.5, 8.0, 10.0]
-    },
-    {
-        "nome": "Diego",
-        "notas": []
-    }
-]
+estudantes = []
 
 
 def calcular_media(notas: list[float]) -> float:
@@ -112,16 +95,75 @@ def verificar_aprovacao(media: float, media_minima: float = 7.0) -> str:
 
     Argumentos:
     media (float): Média final calculada do estudante.
-    media_minima (float): Valor mínimo necessário para aprovação. O padrão é 7.0.
+    media_minima (float): Valor mínimo necessário para aprovação.
 
     Retornos:
-    str: Retorna "Aprovado" se a média for maior ou igual à média mínima,
-    ou "Reprovado" caso contrário.
+    str: Situação do estudante.
     """
     if media >= media_minima:
         return "Aprovado"
 
     return "Reprovado"
+
+
+def solicitar_nome() -> str:
+    """
+    Solicita o nome do estudante até que um valor válido seja informado.
+    """
+    while True:
+        nome = input("Digite o nome do estudante: ")
+
+        try:
+            return validar_nome(nome)
+        except ValueError as erro:
+            print(f"Erro: {erro}")
+
+
+def solicitar_notas() -> list[float]:
+    """
+    Solicita as notas do estudante pelo terminal.
+
+    O cadastro termina quando a pessoa pressiona Enter sem digitar uma nota.
+    """
+    notas = []
+
+    print("\nDigite uma nota por vez.")
+    print("Pressione Enter sem digitar nada para finalizar.")
+
+    while True:
+        entrada = input(f"Nota {len(notas) + 1}: ").strip()
+
+        if entrada == "":
+            if notas:
+                return notas
+
+            print("Cadastre pelo menos uma nota.")
+            continue
+
+        try:
+            nota = float(entrada.replace(",", "."))
+        except ValueError:
+            print("Erro: digite uma nota numérica.")
+            continue
+
+        try:
+            notas.append(validar_nota(nota))
+        except ValueError as erro:
+            print(f"Erro: {erro}")
+
+
+def cadastrar_estudante_interativo(alunos: list[dict]) -> None:
+    """
+    Realiza o cadastro de um estudante por meio do terminal.
+    """
+    print("\n===== CADASTRO DE ESTUDANTE =====")
+
+    nome = solicitar_nome()
+    notas = solicitar_notas()
+
+    estudante = cadastrar_estudante(alunos, nome, notas)
+
+    print(f"\nEstudante {estudante['nome']} cadastrado com sucesso!")
 
 
 def gerar_relatorio(
@@ -130,15 +172,12 @@ def gerar_relatorio(
 ) -> None:
     """
     Gera um relatório de desempenho dos estudantes.
-
-    Argumentos:
-    alunos (list[dict]): Lista de dicionários contendo nome e notas dos estudantes.
-    media_minima_escola (float): Média mínima usada para definir aprovação.
-
-    Retornos:
-    None: A função não retorna valor, apenas imprime o relatório no terminal.
     """
-    print("===== RELATÓRIO DE DESEMPENHO =====")
+    print("\n===== RELATÓRIO DE DESEMPENHO =====")
+
+    if not alunos:
+        print("Nenhum estudante cadastrado.")
+        return
 
     for aluno in alunos:
         nome = aluno["nome"]
@@ -146,12 +185,48 @@ def gerar_relatorio(
 
         media = calcular_media(notas)
         situacao = verificar_aprovacao(media, media_minima_escola)
+        notas_formatadas = ", ".join(
+            f"{nota:.1f}" for nota in notas
+        )
 
-        print(f"Aluno: {nome}")
+        print(f"\nEstudante: {nome}")
+        print(f"Notas: {notas_formatadas}")
         print(f"Média: {media:.2f}")
         print(f"Situação: {situacao}")
         print("------------------------------")
 
 
+def exibir_menu() -> None:
+    """
+    Exibe as opções disponíveis no sistema.
+    """
+    print("\n===== GERENCIADOR DE NOTAS =====")
+    print("1 - Cadastrar estudante")
+    print("2 - Visualizar relatório")
+    print("3 - Encerrar programa")
+
+
+def executar_sistema() -> None:
+    """
+    Mantém o sistema em execução até que a opção de saída seja escolhida.
+    """
+    while True:
+        exibir_menu()
+        opcao = input("Escolha uma opção: ").strip()
+
+        if opcao == "1":
+            cadastrar_estudante_interativo(estudantes)
+
+        elif opcao == "2":
+            gerar_relatorio(estudantes)
+
+        elif opcao == "3":
+            print("\nPrograma encerrado.")
+            break
+
+        else:
+            print("\nOpção inválida. Escolha 1, 2 ou 3.")
+
+
 if __name__ == "__main__":
-    gerar_relatorio(estudantes, media_minima_escola=7.0)
+    executar_sistema()
