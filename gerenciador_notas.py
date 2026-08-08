@@ -74,9 +74,13 @@ def cadastrar_estudante(
     dict: Dicionário com o nome e as notas do estudante cadastrado.
 
     Exceções:
-    ValueError: Quando o nome ou alguma nota forem inválidos.
+    ValueError: Quando o nome, a lista de notas ou alguma nota forem inválidos.
     """
     nome_validado = validar_nome(nome)
+
+    if not notas:
+        raise ValueError("O estudante deve possuir pelo menos uma nota.")
+
     notas_validadas = [validar_nota(nota) for nota in notas]
 
     novo_estudante = {
@@ -185,6 +189,7 @@ def gerar_relatorio(
 
         media = calcular_media(notas)
         situacao = verificar_aprovacao(media, media_minima_escola)
+
         notas_formatadas = ", ".join(
             f"{nota:.1f}" for nota in notas
         )
